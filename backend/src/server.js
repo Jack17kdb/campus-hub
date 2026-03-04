@@ -45,7 +45,7 @@ app.use(
           "'self'",
           process.env.CLIENT_URL || "http://localhost:5173",
           "wss://campus-hub-qq2m.onrender.com",
-          "ws://localhost:5000"
+          "ws://localhost:5000",
           "https://res.cloudinary.com",
           "https://api.cloudinary.com"
         ],
