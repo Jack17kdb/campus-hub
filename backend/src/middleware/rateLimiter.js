@@ -3,7 +3,7 @@ import { createClient } from 'redis';
 import RedisStore from 'rate-limit-redis';
 
 const redisClient = createClient({
-	url: 'redis://localhost:6379',
+	url: `redis://default:${process.env.REDIS_API_KEY}@redis-12544.c15.us-east-1-2.ec2.cloud.redislabs.com:12544`,
 });
 
 redisClient.on('error', (err) => {
