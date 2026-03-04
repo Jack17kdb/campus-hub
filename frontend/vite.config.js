@@ -40,7 +40,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,ico,png,svg,jpeg,jpg}'],
-	navigateFallback: null
+	navigateFallback: null,
         runtimeCaching: [
           {
             // Cache API responses
