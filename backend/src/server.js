@@ -9,13 +9,17 @@ import cors from 'cors';
 import cookieParser from "cookie-parser";
 import { logger, errorLogger } from './middleware/logger.js';
 import { app, server } from './lib/socket.js';
-import path from 'path';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 const PORT = process.env.PORT || 5000;
-const __dirname = path.resolve();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 app.use(cors({
-	origin: "http://localhost:5173",
+	origin: process.env.NODE_ENV === 'production'
+	        ? process.env.CLIENT_URL
+        	: "http://localhost:5173",
 	methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
 	credentials: true
 }));
@@ -38,7 +42,7 @@ app.use('/api/item', itemRoutes);
 if(process.env.NODE_ENV === 'production'){
 	app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 
-	app.get('/*splat', (req, res) => {
+	app.get('*all', (req, res) => {
 		res.sendFile(path.join(__dirname, "../../frontend", "dist", "index.html"));
 	})
 }
@@ -46,4 +50,6 @@ if(process.env.NODE_ENV === 'production'){
 server.listen(PORT, () => {
 	connectDB();
 	console.log("Server listening on port: ", PORT);
+	console.log("__dirname:", __dirname);
+	console.log("Serving from:", path.join(__dirname, "../../frontend/dist"));
 });
