@@ -27,7 +27,17 @@ app.use(cors({
 app.use(cookieParser());
 app.use(logger);
 app.use(errorLogger);
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        "img-src": ["'self'", "data:", "https://res.cloudinary.com"],
+        "connect-src": ["'self'", "https://res.cloudinary.com"],
+      },
+    },
+  })
+);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }))
 
