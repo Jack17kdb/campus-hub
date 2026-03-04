@@ -39,14 +39,15 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpeg,jpg}'],
+        globPatterns: ['**/*.{js,css,ico,png,svg,jpeg,jpg}'],
+	navigateFallback: null
         runtimeCaching: [
           {
             // Cache API responses
             urlPattern: /^https?.*\/api\/.*/i,
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'api-cache',
+              cacheName: 'api-cache-v1',
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 // 24 hours
@@ -58,7 +59,7 @@ export default defineConfig({
             urlPattern: /^https:\/\/res\.cloudinary\.com\/.*/i,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'cloudinary-images',
+              cacheName: 'cloudinary-images-v1',
               expiration: {
                 maxEntries: 200,
                 maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
