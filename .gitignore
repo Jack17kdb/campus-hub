@@ -1,0 +1,9 @@
+.env
+.txt
+node*
+.git
+env
+dist
+build
+node_modules
+
