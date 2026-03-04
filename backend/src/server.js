@@ -27,13 +27,43 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         "default-src": ["'self'"],
-        "img-src": ["'self'", "data:", "https://res.cloudinary.com"],
-        "script-src": ["'self'", "'unsafe-inline'"],
-        "connect-src": ["'self'"],
+        "img-src": [
+          "'self'",
+          "data:",
+          "blob:",
+          "https://res.cloudinary.com"
+        ],
+        "script-src": [
+          "'self'",
+          "'unsafe-inline'"
+        ],
+        "style-src": [
+          "'self'",
+          "'unsafe-inline'"
+        ],
+        "connect-src": [
+          "'self'",
+          process.env.CLIENT_URL || "http://localhost:5173",
+          "wss://campus-hub-qq2m.onrender.com",
+          "ws://localhost:5000"
+          "https://res.cloudinary.com",
+          "https://api.cloudinary.com"
+        ],
+        "media-src": [
+          "'self'",
+          "https://res.cloudinary.com"
+        ],
+        "font-src": [
+          "'self'",
+          "data:"
+        ],
+        "frame-ancestors": ["'none'"],
+        "form-action": ["'self'"]
       },
     },
   })
 );
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }))
 app.use(cookieParser());
