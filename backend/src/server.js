@@ -61,4 +61,5 @@ server.listen(PORT, () => {
 	console.log("Server listening on port: ", PORT);
 	console.log("__dirname:", __dirname);
 	console.log("Serving from:", path.join(__dirname, "../../frontend/dist"));
+	console.log("CLIENT_URL:", process.env.CLIENT_URL);
 });
