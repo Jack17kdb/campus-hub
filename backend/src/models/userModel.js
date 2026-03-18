@@ -14,8 +14,8 @@ const userSchema = new mongoose.Schema({
         unique: true,
         trim: true,
         match: [
-            /^[a-zA-Z0-9._%+-]+@kist\.ac\.ke$/,
-            "Please use a valid KIST institutional email (@kist.ac.ke)"
+            /^[a-zA-Z0-9._%+-]+@(kist\.ac\.ke|kiambupoly\.ac\.ke)$/,
+            "Please use a valid KINAP institutional email (@kist.ac.ke or @kiambupoly.ac.ke)"
         ]
     },
     studentId: {

@@ -32,7 +32,9 @@ app.use(
           "'self'",
           "data:",
           "blob:",
-          "https://res.cloudinary.com"
+          "https://res.cloudinary.com",
+          "https://loremflickr.com",
+          "https://live.staticflickr.com"
         ],
         "script-src": [
           "'self'",

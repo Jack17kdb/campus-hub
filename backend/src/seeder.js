@@ -1,14 +1,15 @@
 import mongoose from 'mongoose';
+import { connectDB } from './lib/db.js';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import User from './models/userModel.js';
 import Item from './models/itemModel.js';
 import Message from './models/chatModel.js';
 
-dotenv.config({ path: '../.env' });
+dotenv.config();
 
-// ── Picsum photos gives stable, free, no-auth images by ID ──────────────────
-const img = (id, w = 400, h = 400) => `https://picsum.photos/id/${id}/${w}/${h}`;
+const img = (keyword, n = 1) =>
+  `https://loremflickr.com/600/400/${keyword}?lock=${n}`;
 
 const USERS = [
   { username: 'jackmuriithi',   email: 'jack.muriithi@kist.ac.ke',   studentId: 'CSC6/0001/23' },
@@ -22,11 +23,11 @@ const USERS = [
 ];
 
 const ITEMS = [
-  // ── Marketplace (selling) ──────────────────────────────────────────────────
+  // ── Marketplace — Selling ────────────────────────────────────────────────
   {
     title: 'Engineering Mathematics Textbook',
     description: 'Stroud Engineering Mathematics 7th edition. Good condition, minor highlights. Perfect for 1st and 2nd year students.',
-    image: img(24, 600, 400),
+    image: img('mathematics,textbook', 1),
     intention: 'selling',
     price: 850,
     category: 'Textbooks',
@@ -36,7 +37,7 @@ const ITEMS = [
   {
     title: 'HP Laptop 15" i5 8GB RAM',
     description: 'HP laptop, 3 years old, still running perfectly. Comes with charger and laptop bag. Battery lasts about 3 hours.',
-    image: img(48, 600, 400),
+    image: img('laptop,computer', 2),
     intention: 'selling',
     price: 28000,
     category: 'Electronics',
@@ -46,7 +47,7 @@ const ITEMS = [
   {
     title: 'Introduction to Programming – C++',
     description: 'Deitel C++ How to Program 10th edition. Barely used, no highlights. Great for CSC students.',
-    image: img(160, 600, 400),
+    image: img('programming,book', 3),
     intention: 'selling',
     price: 600,
     category: 'Textbooks',
@@ -56,7 +57,7 @@ const ITEMS = [
   {
     title: 'Scientific Calculator Casio FX-991ES',
     description: 'Used for one semester, works perfectly. Great for maths and physics units.',
-    image: img(356, 600, 400),
+    image: img('calculator,scientific', 4),
     intention: 'selling',
     price: 1500,
     category: 'Electronics',
@@ -66,7 +67,7 @@ const ITEMS = [
   {
     title: 'Hostel Bedding Set',
     description: 'Fitted sheet, duvet, and two pillowcases. Washed and in clean condition. Suitable for standard hostel beds.',
-    image: img(180, 600, 400),
+    image: img('bedding,pillow', 5),
     intention: 'selling',
     price: 1200,
     category: 'Hostel Gear',
@@ -76,7 +77,7 @@ const ITEMS = [
   {
     title: 'Lab Coat (Medium)',
     description: 'White lab coat, medium size, used for one semester. Clean, no stains.',
-    image: img(119, 600, 400),
+    image: img('labcoat,laboratory', 6),
     intention: 'selling',
     price: 400,
     category: 'Lab Equipment',
@@ -86,7 +87,7 @@ const ITEMS = [
   {
     title: 'Android Phone Samsung Galaxy A14',
     description: 'Selling Samsung A14, 64GB, good condition. Screen protector on. Comes with original charger.',
-    image: img(442, 600, 400),
+    image: img('android,smartphone', 7),
     intention: 'selling',
     price: 14000,
     category: 'Electronics',
@@ -96,7 +97,7 @@ const ITEMS = [
   {
     title: 'Drawing Instruments Set',
     description: 'Full geometry set including compass, protractor, set squares and pencils. Good condition.',
-    image: img(209, 600, 400),
+    image: img('geometry,compass,drawing', 8),
     intention: 'selling',
     price: 350,
     category: 'Lab Equipment',
@@ -106,7 +107,7 @@ const ITEMS = [
   {
     title: 'Business Communication Textbook',
     description: 'Business Communication Today – 14th edition. Perfect for BIT students taking communication units.',
-    image: img(327, 600, 400),
+    image: img('business,book', 9),
     intention: 'selling',
     price: 700,
     category: 'Textbooks',
@@ -116,18 +117,19 @@ const ITEMS = [
   {
     title: 'Extension Cable 5-Way 3 Metres',
     description: 'Heavy duty extension cord, 3 metres. Works perfectly, great for hostel rooms with few sockets.',
-    image: img(365, 600, 400),
+    image: img('extension,cable,power', 10),
     intention: 'selling',
     price: 650,
     category: 'Hostel Gear',
     status: 'Available',
     ownerIndex: 1,
   },
-  // ── Donating ────────────────────────────────────────────────────────────────
+
+  // ── Donating ─────────────────────────────────────────────────────────────
   {
     title: 'Introduction to Networking Notes',
     description: 'Printed notes for Networking unit, semester 3. Well organised and complete. Free to a good student.',
-    image: img(266, 600, 400),
+    image: img('notes,paper,study', 11),
     intention: 'donating',
     price: 0,
     category: 'Documents',
@@ -137,18 +139,19 @@ const ITEMS = [
   {
     title: 'Java Programming Textbook',
     description: 'Head First Java 3rd edition. I graduated, no longer need it. Take it free.',
-    image: img(415, 600, 400),
+    image: img('java,programming,book', 12),
     intention: 'donating',
     price: 0,
     category: 'Textbooks',
     status: 'Available',
     ownerIndex: 3,
   },
-  // ── Lost and Found (returning) ───────────────────────────────────────────────
+
+  // ── Lost and Found — Returning ────────────────────────────────────────────
   {
     title: 'Student ID Card',
     description: 'Found a student ID card near the cafeteria. Name visible on card. Please reach out to claim.',
-    image: img(392, 600, 400),
+    image: img('id,card,identity', 13),
     intention: 'returning',
     price: 0,
     category: 'IDs',
@@ -158,7 +161,7 @@ const ITEMS = [
   {
     title: 'Black Leather Wallet',
     description: 'Found in the library on Tuesday afternoon. Contains some cash and cards. Owner please contact me.',
-    image: img(169, 600, 400),
+    image: img('wallet,leather', 14),
     intention: 'returning',
     price: 0,
     category: 'Wallets',
@@ -168,7 +171,7 @@ const ITEMS = [
   {
     title: 'Set of Keys on Red Keychain',
     description: 'Found near Block A staircase. 3 keys on a red keychain. Come to Block B room 14 to claim.',
-    image: img(306, 600, 400),
+    image: img('keys,keychain', 15),
     intention: 'returning',
     price: 0,
     category: 'Keys',
@@ -178,7 +181,7 @@ const ITEMS = [
   {
     title: 'Black Backpack',
     description: 'Found abandoned in the computer lab after evening class. Contains some books and a pencil case.',
-    image: img(404, 600, 400),
+    image: img('backpack,bag', 16),
     intention: 'returning',
     price: 0,
     category: 'Bags',
@@ -188,7 +191,7 @@ const ITEMS = [
   {
     title: 'Earphones (White)',
     description: 'Found near the main gate. White wired earphones in a small pouch. Message me to identify and claim.',
-    image: img(129, 600, 400),
+    image: img('earphones,headphones', 17),
     intention: 'returning',
     price: 0,
     category: 'Gadgets',
@@ -209,14 +212,12 @@ const MESSAGES = [
   { fromIndex: 5, toIndex: 4, text: "That's the one. Let's meet at the cafeteria at 1pm." },
 ];
 
-// ── Seed ────────────────────────────────────────────────────────────────────
+// ── Seed ─────────────────────────────────────────────────────────────────────
 
 const seed = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log('Connected to MongoDB');
+    connectDB();
 
-    // Clear existing seed data only (emails ending in kist.ac.ke and belonging to seeded usernames)
     const seedUsernames = USERS.map(u => u.username);
     const existingUsers = await User.find({ username: { $in: seedUsernames } });
     const existingIds = existingUsers.map(u => u._id);
@@ -228,7 +229,6 @@ const seed = async () => {
     await User.deleteMany({ username: { $in: seedUsernames } });
     console.log('Cleared old seed data');
 
-    // Create users
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash('Password123', salt);
 
@@ -237,12 +237,11 @@ const seed = async () => {
         ...u,
         password: hash,
         isVerified: true,
-        profilePic: img(Math.floor(Math.random() * 100) + 10, 200, 200),
+        profilePic: `https://loremflickr.com/200/200/portrait,person?lock=${Math.floor(Math.random() * 50) + 1}`,
       }))
     );
     console.log(`Created ${createdUsers.length} users`);
 
-    // Create items
     const createdItems = await Item.insertMany(
       ITEMS.map(item => ({
         title: item.title,
@@ -257,7 +256,6 @@ const seed = async () => {
     );
     console.log(`Created ${createdItems.length} items`);
 
-    // Create messages
     const createdMessages = await Message.insertMany(
       MESSAGES.map(m => ({
         senderId: createdUsers[m.fromIndex]._id,
