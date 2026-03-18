@@ -5,6 +5,7 @@ from pymongo import MongoClient
 from langchain.tools import tool
 from pymongo.errors import ConnectionFailure
 from typing import Annotated, TypedDict, List, Optional
+from langchain_openai import ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
@@ -102,8 +103,13 @@ def query_mongodb(collection_name: str, filter_query: Optional[dict] = None, pro
 	finally:
 		client.close()
 
-llm = ChatGoogleGenerativeAI(
+gemini = ChatGoogleGenerativeAI(
 	model="gemini-2.5-flash",
+	temperature=0
+)
+
+gpt = ChatOpenAI(
+	model="gpt-4o-mini",
 	temperature=0
 )
 
@@ -116,6 +122,8 @@ FOLLOW THESE STEPS IN ORDER:
 3. QUERY: Use 'query_mongodb' to fetch the actual data.
 
 IMPORTANT RULES:
+- Items collection contains items for sale or lost and found based on intention.
+- Never return user passwords or anything sensitive.
 - Never guess field names; always check the schema first.
 - If a query fails, look at the error message, re-inspect the schema, and try a corrected query.
 - Only return the final answer to the user once you have the data.
@@ -128,7 +136,7 @@ class AgentState(TypedDict):
 tools = [list_mongodb_collections, get_mongodb_schema, query_mongodb]
 tool_node = ToolNode(tools)
 
-llm_with_tools = llm.bind_tools(tools)
+llm_with_tools = gpt.bind_tools(tools)
 
 def model_call(state: AgentState):
 	messages = state["messages"]
@@ -136,7 +144,7 @@ def model_call(state: AgentState):
 	if not isinstance(messages[0], SystemMessage):
 		messages = [SystemMessage(content=SYSTEM_PROMPT)] + messages
 
-	response = llm_with_tools.invoke(state["messages"])
+	response = llm_with_tools.invoke(messages)
 	return { "messages": [response] }
 
 def should_continue(state: AgentState):

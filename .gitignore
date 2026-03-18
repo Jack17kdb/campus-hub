@@ -1,5 +1,5 @@
 .env
-.txt
+logs.txt
 node*
 .git
 env
