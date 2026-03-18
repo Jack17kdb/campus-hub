@@ -75,7 +75,8 @@ const MarketPlace = () => {
             {items && items.filter((item) => item.intention === 'selling').slice(0, visibleCount).map((item) => (
               <div
                 key={item._id}
-                className="overflow-hidden rounded-2xl bg-white shadow-sm transition hover:shadow-md"
+                onClick={() => navigate(`/item/${item._id}`)}
+                className="overflow-hidden rounded-2xl bg-white shadow-sm transition hover:shadow-md cursor-pointer"
               >
                 <img
                   src={item.image}
@@ -99,7 +100,7 @@ const MarketPlace = () => {
                   </div>
 
                   <p className="text-xs text-gray-500">
-                    {item.owner?.username} • {item.owner?.studentId}
+                    {item.owner?.username} • {item.owner?.studentId ? new DOMParser().parseFromString(item.owner.studentId, 'text/html').body.textContent : ''}
                   </p>
 
                   <div className="mt-3 flex items-center justify-between">

@@ -48,7 +48,8 @@ const SearchPage = () => {
             {items.map((item) => (
               <div
                 key={item._id}
-                className="overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-md"
+                onClick={() => navigate(`/item/${item._id}`)}
+                className="overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-md cursor-pointer"
               >
                 <img
                   src={item.image}

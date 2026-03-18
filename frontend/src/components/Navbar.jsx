@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { FaSearch, FaBars, FaTimes, FaArrowLeft, FaUser, FaSignOutAlt } from 'react-icons/fa'
-import { MessageCircle } from 'lucide-react'
+import { MessageCircle, Bot } from 'lucide-react'
 import { useAuthStore } from '../store/authStore.js'
 import { useItemStore } from '../store/itemStore.js'
 
@@ -84,6 +84,10 @@ const Navbar = () => {
 
               <NavLink to="/chat">
                 <MessageCircle className="cursor-pointer text-gray-500 transition hover:text-black" />
+              </NavLink>
+
+              <NavLink to="/kistbot" title="KistBot AI Assistant">
+                <Bot className="cursor-pointer text-gray-500 transition hover:text-orange-500" />
               </NavLink>
 
               <div ref={profileDropdownRef} className="relative">

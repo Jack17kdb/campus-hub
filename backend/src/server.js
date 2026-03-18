@@ -3,6 +3,7 @@ import helmet from 'helmet'
 import authRoutes from './routes/authRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import itemRoutes from './routes/itemRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
 import { connectDB } from './lib/db.js';
 import redisLimiter from './middleware/rateLimiter.js';
 import cors from 'cors';
@@ -47,7 +48,8 @@ app.use(
           "wss://campus-hub-qq2m.onrender.com",
           "ws://localhost:5000",
           "https://res.cloudinary.com",
-          "https://api.cloudinary.com"
+          "https://api.cloudinary.com",
+          "http://localhost:8000"
         ],
         "media-src": [
           "'self'",
@@ -77,6 +79,7 @@ if (process.env.NODE_ENV === 'production') {
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', messageRoutes);
 app.use('/api/item', itemRoutes);
+app.use('/api/agent', aiRoutes);
 
 if(process.env.NODE_ENV === 'production'){
 	app.use(express.static(path.join(__dirname, "../../frontend/dist")));

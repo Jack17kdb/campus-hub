@@ -4,12 +4,14 @@ import { motion } from 'motion/react'
 import Navbar from '../components/Navbar.jsx'
 import { useItemStore } from '../store/itemStore.js'
 import { useAuthStore } from '../store/authStore.js'
+import { useChatStore } from '../store/chatStore.js'
 import { FiRefreshCw, FiTrash2 } from 'react-icons/fi'
 
 const ItemDetails = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-
+  
+  const { setSelectedUser } = useChatStore()
   const { authUser } = useAuthStore()
   const {
     item,
@@ -24,6 +26,15 @@ const ItemDetails = () => {
   useEffect(() => {
     getItemById(id)
   }, [id])
+  
+  const handleContact = () => {
+    setSelectedUser({
+      _id: item.owner._id,
+      username: item.owner.username,
+      profilePic: item.owner.profilePic
+    })
+    navigate('/chat')
+  }
 
   if (isFetchingItemDetails) {
     return (
@@ -92,7 +103,7 @@ const ItemDetails = () => {
               </div>
 
               <p className="mb-4 text-sm text-gray-500">
-                Posted by {item.owner?.username} • {item.owner?.studentId}
+                Posted by {item.owner?.username} • {item.owner?.studentId ? new DOMParser().parseFromString(item.owner.studentId, 'text/html').body.textContent : ''}
               </p>
 
               <p className="mb-6 text-sm leading-relaxed text-gray-700">
@@ -134,7 +145,7 @@ const ItemDetails = () => {
                   </button>
                 </>
               ) : (
-                <button className="rounded-full bg-orange-500 px-6 py-2 text-sm font-medium text-white hover:bg-orange-600">
+                <button onClick={handleContact} className="rounded-full bg-orange-500 px-6 py-2 text-sm font-medium text-white hover:bg-orange-600 cursor-pointer">
                   Contact {item.owner?.username}
                 </button>
               )}

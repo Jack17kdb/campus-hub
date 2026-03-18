@@ -3,6 +3,7 @@ import Register from './pages/Register.jsx';
 import Login from './pages/Login.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
+import VerifyEmail from './pages/VerifyEmail.jsx';
 import Homepage from './pages/Homepage.jsx';
 import MarketPlace from './pages/MarketPlace.jsx';
 import LostAndFound from './pages/LostAndFound.jsx';
@@ -13,9 +14,10 @@ import CreateItem from './pages/CreateItem.jsx';
 import ProfileEdit from './pages/ProfileEdit.jsx';
 import ItemDetails from './pages/ItemDetails.jsx';
 import UserDetails from './pages/UserDetails.jsx';
+import AiPage from './pages/AiPage.jsx';
 import { Toaster } from 'react-hot-toast';
 import { useAuthStore } from './store/authStore.js'
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import InstallPrompt from './components/InstallPrompt.jsx';
 
 function App() {
@@ -37,10 +39,15 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
+          {/* Public auth routes */}
           <Route path='/register' element={!authUser ? <Register /> : <Navigate to='/home' />} />
           <Route path='/login' element={!authUser ? <Login /> : <Navigate to='/home' />} />
           <Route path='/forgot-password' element={!authUser ? <ForgotPassword /> : <Navigate to='/home' />} />
           <Route path='/reset-password' element={!authUser ? <ResetPassword /> : <Navigate to='/home' />} />
+          {/* Verify email is accessible whether logged in or not — link arrives via email */}
+          <Route path='/verify-email' element={<VerifyEmail />} />
+
+          {/* Protected routes */}
           <Route path='/home' element={authUser ? <Homepage /> : <Navigate to='/login' />} />
           <Route path='/marketplace' element={authUser ? <MarketPlace /> : <Navigate to='/login' />} />
           <Route path='/lostandfound' element={authUser ? <LostAndFound /> : <Navigate to='/login' />} />
@@ -51,6 +58,7 @@ function App() {
           <Route path='/profile-edit' element={authUser ? <ProfileEdit /> : <Navigate to='/login' />} />
           <Route path='/item/:id' element={authUser ? <ItemDetails /> : <Navigate to='/login' />} />
           <Route path='/user/:id' element={authUser ? <UserDetails /> : <Navigate to='/login' />} />
+          <Route path='/kistbot' element={authUser ? <AiPage /> : <Navigate to='/login' />} />
         </Routes>
         <Toaster />
       </BrowserRouter>
