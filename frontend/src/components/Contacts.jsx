@@ -19,7 +19,7 @@ const Contacts = () => {
 
   useEffect(() => {
     getRecentChats()
-  }, [getRecentChats])
+  }, [])
 
   if (isUsersLoading) return <SidebarSkeleton />
 

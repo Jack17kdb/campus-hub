@@ -36,27 +36,51 @@ export const useChatStore = create((set, get) => ({
     },
 
     sendMessages: async(messageData) => {
-        const { selectedUser, messages, getRecentChats } = get();
+        const { selectedUser, messages, conversations } = get();
         try {
             const res = await axiosInstance.post(`/chat/sendmessages/${selectedUser._id}`, messageData);
-            set({ messages: [...messages, res.data] });
-            
-            await getRecentChats();
+            const newMessage = res.data;
+
+            // Add message to current thread
+            set({ messages: [...messages, newMessage] });
+
+            // Update conversations list locally — move this contact to top with latest message
+            const existingIndex = conversations.findIndex(c => c._id === selectedUser._id);
+            const updatedConvo = {
+                _id: selectedUser._id,
+                lastMessage: newMessage.text || '📷 Image',
+                lastMessageTime: newMessage.createdAt,
+                unreadCount: 0,
+                contactInfo: {
+                    username: selectedUser.username,
+                    profilePic: selectedUser.profilePic,
+                    studentId: selectedUser.studentId,
+                }
+            };
+
+            let updatedConversations;
+            if (existingIndex > -1) {
+                updatedConversations = [
+                    updatedConvo,
+                    ...conversations.filter((_, i) => i !== existingIndex)
+                ];
+            } else {
+                updatedConversations = [updatedConvo, ...conversations];
+            }
+
+            set({ conversations: updatedConversations });
         } catch (error) {
             toast.error(error.response?.data?.message || "Error sending message");
         }
     },
 
     deleteMessages: async(id) => {
-        const { messages, getRecentChats } = get();
+        const { messages } = get();
         try {
             set({ isDeletingMessages: true });
             await axiosInstance.delete(`/chat/deletemessages/${id}`);
-            
+            // Remove from local state only — no extra API call
             set({ messages: messages.filter(msg => msg._id !== id) });
-            
-            await getRecentChats();
-            
             toast.success("Message deleted");
         } catch (error) {
             toast.error(error.response?.data?.message || "Error deleting message");
@@ -73,10 +97,7 @@ export const useChatStore = create((set, get) => ({
 
         socket.on("newMessage", (newMessage) => {
             if(newMessage.senderId !== selectedUser._id) return;
-            
-            set({
-                messages: [...get().messages, newMessage],
-            });
+            set({ messages: [...get().messages, newMessage] });
         });
     },
 

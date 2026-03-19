@@ -83,6 +83,11 @@ def query_mongodb(collection_name: str, filter_query: Optional[dict] = None, pro
 		if isinstance(filter_query, str):
 			filter_query = json.loads(filter_query)
 
+		if filter_query:
+			for key, value in filter_query.items():
+				if isinstance(value, str):
+					filter_query[key] = {"$regex": value, "$options": "i"}
+
 		cursor = collection.find(filter_query or {}, projection).limit(limit)
 
 		results = list(cursor)
@@ -136,7 +141,7 @@ class AgentState(TypedDict):
 tools = [list_mongodb_collections, get_mongodb_schema, query_mongodb]
 tool_node = ToolNode(tools)
 
-llm_with_tools = gpt.bind_tools(tools)
+llm_with_tools = gemini.bind_tools(tools)
 
 def model_call(state: AgentState):
 	messages = state["messages"]

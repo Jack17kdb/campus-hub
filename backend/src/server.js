@@ -4,6 +4,9 @@ import authRoutes from './routes/authRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import itemRoutes from './routes/itemRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
+import mpesaRoutes from './routes/mpesaRoutes.js';
+import cartRoutes from './routes/cartRoutes.js';
 import { connectDB } from './lib/db.js';
 import redisLimiter from './middleware/rateLimiter.js';
 import cors from 'cors';
@@ -82,6 +85,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/chat', messageRoutes);
 app.use('/api/item', itemRoutes);
 app.use('/api/agent', aiRoutes);
+app.use("/api/mpesa", mpesaRoutes);
+app.use("/api/payment", paymentRoutes);
+app.use("/api/cart", cartRoutes);
 
 if(process.env.NODE_ENV === 'production'){
 	app.use(express.static(path.join(__dirname, "../../frontend/dist")));

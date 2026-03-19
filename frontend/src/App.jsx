@@ -15,6 +15,8 @@ import ProfileEdit from './pages/ProfileEdit.jsx';
 import ItemDetails from './pages/ItemDetails.jsx';
 import UserDetails from './pages/UserDetails.jsx';
 import AiPage from './pages/AiPage.jsx';
+import CartPage from './pages/CartPage.jsx';
+import PaymentsPage from './pages/PaymentsPage.jsx';
 import { Toaster } from 'react-hot-toast';
 import { useAuthStore } from './store/authStore.js'
 import { useEffect } from 'react';
@@ -39,15 +41,14 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          {/* Public auth routes */}
+          {/* Public */}
           <Route path='/register' element={!authUser ? <Register /> : <Navigate to='/home' />} />
           <Route path='/login' element={!authUser ? <Login /> : <Navigate to='/home' />} />
           <Route path='/forgot-password' element={!authUser ? <ForgotPassword /> : <Navigate to='/home' />} />
           <Route path='/reset-password' element={!authUser ? <ResetPassword /> : <Navigate to='/home' />} />
-          {/* Verify email is accessible whether logged in or not — link arrives via email */}
           <Route path='/verify-email' element={<VerifyEmail />} />
 
-          {/* Protected routes */}
+          {/* Protected */}
           <Route path='/home' element={authUser ? <Homepage /> : <Navigate to='/login' />} />
           <Route path='/marketplace' element={authUser ? <MarketPlace /> : <Navigate to='/login' />} />
           <Route path='/lostandfound' element={authUser ? <LostAndFound /> : <Navigate to='/login' />} />
@@ -59,6 +60,8 @@ function App() {
           <Route path='/item/:id' element={authUser ? <ItemDetails /> : <Navigate to='/login' />} />
           <Route path='/user/:id' element={authUser ? <UserDetails /> : <Navigate to='/login' />} />
           <Route path='/kistbot' element={authUser ? <AiPage /> : <Navigate to='/login' />} />
+          <Route path='/cart' element={authUser ? <CartPage /> : <Navigate to='/login' />} />
+          <Route path='/payments' element={authUser ? <PaymentsPage /> : <Navigate to='/login' />} />
         </Routes>
         <Toaster />
       </BrowserRouter>

@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { FaSearch, FaBars, FaTimes, FaArrowLeft, FaUser, FaSignOutAlt } from 'react-icons/fa'
-import { MessageCircle, Bot } from 'lucide-react'
+import { FaSearch, FaBars, FaTimes, FaArrowLeft, FaUser, FaSignOutAlt, FaHistory } from 'react-icons/fa'
+import { MessageCircle, Bot, ShoppingCart } from 'lucide-react'
 import { useAuthStore } from '../store/authStore.js'
 import { useItemStore } from '../store/itemStore.js'
+import { useCartStore } from '../store/cartStore.js'
 
 const Navbar = () => {
   const [open, setOpen] = useState(false)
@@ -11,15 +12,14 @@ const Navbar = () => {
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const { logout, authUser } = useAuthStore()
-  const { searchItems, isSearching } = useItemStore()
+  const { searchItems } = useItemStore()
+  const { cartItems } = useCartStore()
   const navigate = useNavigate()
   const profileDropdownRef = useRef(null)
 
   const navLinkStyles = ({ isActive }) =>
     `text-md font-medium transition-colors ${
-      isActive
-        ? 'text-orange-500'
-        : 'text-gray-700 hover:text-orange-500'
+      isActive ? 'text-orange-500' : 'text-gray-700 hover:text-orange-500'
     }`
 
   useEffect(() => {
@@ -29,9 +29,7 @@ const Navbar = () => {
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
   const handleSearch = (e) => {
@@ -42,6 +40,8 @@ const Navbar = () => {
       setSearchMode(false)
     }
   }
+
+  const cartCount = cartItems.length
 
   return (
     <nav className="fixed top-0 z-50 w-full bg-white/80 backdrop-blur-md shadow-sm">
@@ -82,6 +82,16 @@ const Navbar = () => {
                 </form>
               </div>
 
+              {/* Cart icon with badge */}
+              <NavLink to="/cart" className="relative">
+                <ShoppingCart className="cursor-pointer text-gray-500 transition hover:text-black" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-orange-500 text-white text-[10px] flex items-center justify-center font-bold">
+                    {cartCount > 9 ? '9+' : cartCount}
+                  </span>
+                )}
+              </NavLink>
+
               <NavLink to="/chat">
                 <MessageCircle className="cursor-pointer text-gray-500 transition hover:text-black" />
               </NavLink>
@@ -97,7 +107,7 @@ const Navbar = () => {
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                 />
                 {profileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className="absolute right-0 mt-2 w-48 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
                     <div className="py-1">
                       <NavLink
                         to="/profile"
@@ -105,6 +115,13 @@ const Navbar = () => {
                         onClick={() => setProfileDropdownOpen(false)}
                       >
                         <FaUser /> Profile
+                      </NavLink>
+                      <NavLink
+                        to="/payments"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setProfileDropdownOpen(false)}
+                      >
+                        <FaHistory /> Payment History
                       </NavLink>
                       <button
                         onClick={() => { logout(); setProfileDropdownOpen(false) }}
@@ -127,10 +144,7 @@ const Navbar = () => {
           </>
         ) : (
           <div className="flex w-full items-center gap-3">
-            <button
-              onClick={() => setSearchMode(false)}
-              className="text-gray-600 hover:text-black"
-            >
+            <button onClick={() => setSearchMode(false)} className="text-gray-600 hover:text-black">
               <FaArrowLeft />
             </button>
 
@@ -153,18 +167,12 @@ const Navbar = () => {
 
       {open && !searchMode && (
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 pb-4 md:hidden">
-          <NavLink to="/home" className={navLinkStyles} onClick={() => setOpen(false)}>
-            Home
-          </NavLink>
-          <NavLink to="/marketplace" className={navLinkStyles} onClick={() => setOpen(false)}>
-            MarketPlace
-          </NavLink>
-          <NavLink to="/lostandfound" className={navLinkStyles} onClick={() => setOpen(false)}>
-            LostandFound
-          </NavLink>
-          <NavLink to="/create" className={navLinkStyles} onClick={() => setOpen(false)}>
-            Create
-          </NavLink>
+          <NavLink to="/home" className={navLinkStyles} onClick={() => setOpen(false)}>Home</NavLink>
+          <NavLink to="/marketplace" className={navLinkStyles} onClick={() => setOpen(false)}>MarketPlace</NavLink>
+          <NavLink to="/lostandfound" className={navLinkStyles} onClick={() => setOpen(false)}>LostandFound</NavLink>
+          <NavLink to="/create" className={navLinkStyles} onClick={() => setOpen(false)}>Create</NavLink>
+          <NavLink to="/cart" className={navLinkStyles} onClick={() => setOpen(false)}>Cart {cartCount > 0 ? `(${cartCount})` : ''}</NavLink>
+          <NavLink to="/payments" className={navLinkStyles} onClick={() => setOpen(false)}>Payment History</NavLink>
         </div>
       )}
     </nav>
